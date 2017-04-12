@@ -1,0 +1,91 @@
+input {
+
+    stdin {
+
+    }
+
+    jdbc {
+
+      # mysql jdbc connection string to our backup databse
+
+      jdbc_connection_string => "jdbc:mysql://ucenter.mysqldb.chinacloudapi.cn:3306/ucenter?Unicode=true&characterEncoding=utf8&autoReconnect=true&tcpRcvBuf=1024000"
+
+      # the user we wish to excute our statement as
+
+      jdbc_user => "ucenter%konka"
+
+      jdbc_password => "3XLq-z@Vv%@aN2t3cWN(LPN3"
+
+      # the path to our downloaded jdbc driver
+
+      jdbc_driver_library => "/root/logstash/lib/mysql-connector-java-5.1.38.jar"
+
+      # the name of the driver class for mysql
+
+      jdbc_driver_class => "com.mysql.jdbc.Driver"
+
+      jdbc_paging_enabled => "true"
+
+      jdbc_page_size => "50000"
+
+      statement => "SELECT r.*, u.username, u.nickname, u.email, u.gender, u.birthday, r.id as _id FROM ucenter_repair r JOIN ucenter_user u ON u.id=r.user_id WHERE r.updated_at > :sql_last_value"
+      #statement => "SELECT r.*, u.username, u.nickname, u.email, u.gender, u.birthday, r.id as _id FROM ucenter_repair r JOIN ucenter_user u ON u.id=r.user_id"
+
+      #min hour day month weekday
+      schedule => "*/4 * * * *"
+
+      type => "user-repair"
+
+    }
+
+}
+
+
+
+filter {
+
+    json {
+
+        source => "message"
+
+        remove_field => ["message"]
+
+    }
+
+}
+
+
+
+output {
+
+  if[type]=="user-repair"{
+
+    elasticsearch {
+
+        hosts => ["es01:9200"]
+
+        index => "user-repair"
+
+        document_type => "user-repair"
+
+        document_id => "%{id}"
+
+        workers => 1
+
+        flush_size => 20000
+
+        idle_flush_time => 10
+
+        template_overwrite => true
+
+    }
+
+    stdout {
+
+        codec => json_lines
+
+    }
+
+  }
+
+}

@@ -1,0 +1,4 @@
+[program:mysql-zcd-user]
+command=/root/logstash/bin/logstash -f /root/logstash/conf/mysql-zcd-user.conf
+directory=/root/logstash
+user=root

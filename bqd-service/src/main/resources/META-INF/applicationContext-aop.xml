@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans
+        xmlns="http://www.springframework.org/schema/beans"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:aop="http://www.springframework.org/schema/aop"
+        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.1.xsd
+ http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.1.xsd">
+
+    <!--<bean id="dataDMLOperationAspect" class="com.weibangong.xform.service.table.data.common.aspect.DataDMLOperationAspect">-->
+        <!--<property name="messageProducerService" ref="messageProducerService"></property>-->
+        <!--<property name="tableRelationDAO" ref="tableRelationDAO"></property>-->
+        <!--<property name="dataService" ref="dataService"></property>-->
+        <!--<property name="accessTokenDao" ref="bdpAccessTokenDao"/>-->
+    <!--</bean>-->
+
+    <!--<aop:config>-->
+
+        <!--<aop:aspect ref="dataDMLOperationAspect">-->
+            <!--<aop:after-returning method="afterTableCreate"-->
+                                 <!--pointcut="execution(* com.weibangong.xform.service.table.meta.DataTableService.create(String, com.weibangong.xform.service.table.meta.common.model.DataTable)) and args(tenantId, table)"-->
+                                 <!--arg-names="tenantId,table"/>-->
+            <!--<aop:after-returning method="afterTableUpdate"-->
+                                 <!--pointcut="execution(* com.weibangong.xform.service.table.meta.DataTableService.update(String, com.weibangong.xform.service.table.meta.common.model.DataTable)) and args(tenantId, table)"-->
+                                 <!--arg-names="tenantId,table"/>-->
+
+            <!--<aop:after-returning method="afterInsert"-->
+                                 <!--pointcut="execution(* com.weibangong.xform.service.table.data.common.dao.DataDAO.create(String, java.util.List)) and args(tenantId, data)"-->
+                                 <!--arg-names="tenantId,data"/>-->
+
+            <!--<aop:after-returning method="afterUpdate"-->
+                                 <!--pointcut="execution(* com.weibangong.xform.service.table.data.common.dao.DataDAO.update(String, java.util.List)) and args(tenantId, data)"-->
+                                 <!--arg-names="tenantId,data"/>-->
+
+            <!--<aop:after-returning method="afterInsertSingle"-->
+                                 <!--pointcut="execution(* com.weibangong.xform.service.table.data.common.dao.DataDAO.create(String, com.weibangong.xform.service.table.data.common.model.FormData)) and args(tenantId, data)"-->
+                                 <!--arg-names="tenantId,data"/>-->
+            <!--<aop:after-returning method="afterUpdateSingle"-->
+                                 <!--pointcut="execution(* com.weibangong.xform.service.table.data.common.dao.DataDAO.update(String, com.weibangong.xform.service.table.data.common.model.FormData)) and args(tenantId, data)"-->
+                                 <!--arg-names="tenantId,data"/>-->
+
+            <!--<aop:after-returning method="afterDeleteSingle"-->
+                                 <!--pointcut="execution(* com.weibangong.xform.service.table.data.common.dao.DataDAO.delete(String, String)) and args(tenantId, dataId)"-->
+                                 <!--arg-names="tenantId,dataId"/>-->
+
+            <!--<aop:after-returning method="afterDeleteList"-->
+                                 <!--pointcut="execution(* com.weibangong.xform.service.table.data.common.dao.DataDAO.delete(String, java.util.List)) and args(tenantId, dataIds)"-->
+                                 <!--arg-names="tenantId,dataIds"/>-->
+
+            <!--<aop:after-returning method="afterDeleteByForm"-->
+                                 <!--pointcut="execution(* com.weibangong.xform.service.table.data.common.DataService.deleteByForm(String, String)) and args(tenantId,formId)"-->
+                                 <!--arg-names="tenantId,formId"/>-->
+
+            <!--<aop:after-returning method="afterHardDeleteSingle"-->
+                                 <!--pointcut="execution(* com.weibangong.xform.service.table.data.common.DataService.hardDelete(String, com.weibangong.xform.service.table.data.common.model.FormData)) and args(tenantId, data)"-->
+                                 <!--arg-names="tenantId,data"/>-->
+
+            <!--<aop:after-returning method="afterHardDeleteList"-->
+                                 <!--pointcut="execution(* com.weibangong.xform.service.table.data.common.DataService.hardDelete(String, java.util.List)) and args(tenantId, data)"-->
+                                 <!--arg-names="tenantId,data"/>-->
+
+            <!--<aop:after-returning method="afterHardDeleteByForm"-->
+                                 <!--pointcut="execution(* com.weibangong.xform.service.table.data.common.DataService.hardDeleteByForm(String, String)) and args(tenantId, formId)"-->
+                                 <!--arg-names="tenantId,formId"/>-->
+        <!--</aop:aspect>-->
+
+    <!--</aop:config>-->
+
+
+    <!--<bean id="formTriggerAspect" class="com.weibangong.xform.service.table.data.common.aspect.FormDataOperationAspect">-->
+        <!--<property name="triggerService" ref="formTriggerService"></property>-->
+        <!--<property name="messageProducerService" ref="messageProducerService"></property>-->
+        <!--<property name="accessTokenDao" ref="bdpAccessTokenDao"/>-->
+        <!--<property name="lazySyncDao" ref="bdpLazySyncDao"/>-->
+        <!--<property name="dataOperationLogService" ref="dataOperationLogService"></property>-->
+    <!--</bean>-->
+
+    <!--<aop:config>-->
+
+        <!--<aop:aspect ref="formTriggerAspect">-->
+
+            <!--<aop:after-returning method="afterInsertSingle"-->
+                                 <!--pointcut="execution(* com.weibangong.xform.service.table.data.common.dao.DataDAO.create(String, com.weibangong.xform.service.table.data.common.model.FormData)) and args(tenantId, data)"-->
+                                 <!--arg-names="tenantId,data"/>-->
+
+            <!--<aop:after-returning method="afterInsertList"-->
+                                 <!--pointcut="execution(* com.weibangong.xform.service.table.data.common.dao.DataDAO.create(String, java.util.List)) and args(tenantId, data)"-->
+                                 <!--arg-names="tenantId,data"/>-->
+
+            <!--<aop:after-returning method="afterUpdateSingle"-->
+                                 <!--pointcut="execution(* com.weibangong.xform.service.table.data.common.dao.DataDAO.update(String, com.weibangong.xform.service.table.data.common.model.FormData)) and args(tenantId, data)"-->
+                                 <!--arg-names="tenantId,data"/>-->
+
+            <!--<aop:after-returning method="afterUpdateList"-->
+                                 <!--pointcut="execution(* com.weibangong.xform.service.table.data.common.dao.DataDAO.update(String, java.util.List)) and args(tenantId, data)"-->
+                                 <!--arg-names="tenantId,data"/>-->
+
+            <!--<aop:after-returning method="afterDeleteSingle"-->
+                                 <!--pointcut="execution(* com.weibangong.xform.service.table.data.common.dao.DataDAO.delete(String, String)) and args(tenantId, dataId)"-->
+                                 <!--arg-names="tenantId,dataId,data" returning="data"/>-->
+
+            <!--<aop:after-returning method="afterDeleteList"-->
+                                 <!--pointcut="execution(* com.weibangong.xform.service.table.data.common.dao.DataDAO.delete(String, java.util.List)) and args(tenantId, dataIds)"-->
+                                 <!--arg-names="tenantId,dataIds,data" returning="data"/>-->
+
+        <!--</aop:aspect>-->
+
+    <!--</aop:config>-->
+
+    <!--<bean id="cacheAspect" class="com.weibangong.xform.service.support.CacheAspect">-->
+        <!--<property name="redisDAO" ref="redisDAO2"/>-->
+    <!--</bean>-->
+
+</beans>

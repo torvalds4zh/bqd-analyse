@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:security="http://www.springframework.org/schema/security"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                           http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://www.springframework.org/schema/security
+                           http://www.springframework.org/schema/security/spring-security-4.2.xsd">
+
+    <security:http use-expressions="true"
+                   entry-point-ref="restAuthenticationEntryPoint"
+                   authentication-manager-ref="authenticationManager"
+                   security-context-repository-ref="securityContextRepository">
+
+
+        <security:intercept-url pattern="/api/form/data" access="hasRole('ROLE_USER')" method="POST"/>
+
+        <security:intercept-url pattern="/api/form/data/permission" access="hasRole('ROLE_ADMIN')" method="GET"/>
+
+        <security:intercept-url pattern="/api/app/version" access="permitAll"/>
+
+        <security:form-login authentication-success-handler-ref="successHandler"
+                             authentication-failure-handler-ref="failureHandler"
+                             login-processing-url="/api/login"/>
+
+        <security:csrf disabled="true"/>
+
+        <security:logout logout-url="/api/logout" success-handler-ref="restLogoutSuccessHandler"/>
+
+        <!--
+        <security:session-management>
+            <security:concurrency-control max-sessions="2"/>
+        </security:session-management>
+        -->
+
+        <security:custom-filter ref="tokenAuthenticationFilter" before="FIRST"/>
+        <security:custom-filter ref="tokenSetterFilter" before="LAST"/>
+
+    </security:http>
+
+    <security:authentication-manager alias="authenticationManager">
+        <security:authentication-provider ref='userAuthenticationProvider'/>
+    </security:authentication-manager>
+
+    <bean id="tokenAuthenticationFilter" class="com.haizhi.bqd.web.rest.security.TokenAuthenticationFilter">
+        <property name="userService" ref="userService"/>
+    </bean>
+
+    <bean id="tokenSetterFilter" class="com.haizhi.bqd.web.rest.security.TokenSetterFilter"></bean>
+
+    <bean id="userAuthenticationProvider" class="com.haizhi.bqd.web.rest.security.UserAuthenticationProvider">
+        <property name="passwordEncoder" ref="simpleHashPasswordEncoder"/>
+        <property name="userRepo" ref="userRepo"></property>
+    </bean>
+
+    <bean id="restLogoutSuccessHandler" class="com.haizhi.bqd.web.rest.security.RestLogoutSuccessHandler">
+        <property name="userService" ref="userService"></property>
+    </bean>
+
+    <bean id="restAuthenticationEntryPoint" class="com.haizhi.bqd.web.rest.security.RestAuthenticationEntryPoint"></bean>
+
+    <bean id="successHandler" class="com.haizhi.bqd.web.rest.security.RestAuthenticationSuccessHandler">
+        <property name="userService" ref="userService"></property>
+    </bean>
+
+    <bean id="failureHandler" class="com.haizhi.bqd.web.rest.security.RestAuthenticationFailureHandler"></bean>
+
+    <bean id="securityContextRepository"
+          class='com.haizhi.bqd.web.rest.security.SessionSecurityContextRepository'>
+    </bean>
+
+    <!--<bean id="securityContextRepository"
+          class='org.springframework.security.web.context.HttpSessionSecurityContextRepository'>
+        <property name='allowSessionCreation' value='false'/>
+    </bean>-->
+
+    <bean id="simpleHashPasswordEncoder" class="com.haizhi.bqd.common.security.SimpleHashPasswordEncoder"/>
+
+    <!--<bean id="MD5Encoder" class="com.haizhi.bqd.common.security.MD5Encoder"/>-->
+
+</beans>
