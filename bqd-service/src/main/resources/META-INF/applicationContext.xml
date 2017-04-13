@@ -20,6 +20,7 @@
         <property name="configs">
             <list>
                 <value>db.cfg</value>
+                <value>es.cfg</value>
                 <value>sms.cfg</value>
                 <value>redis.cfg</value>
             </list>

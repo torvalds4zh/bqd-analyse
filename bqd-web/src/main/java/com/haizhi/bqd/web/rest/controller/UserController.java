@@ -5,6 +5,7 @@ import com.haizhi.bqd.common.Wrapper;
 import com.haizhi.bqd.service.model.User;
 import com.haizhi.bqd.service.service.UserService;
 import com.haizhi.bqd.web.exception.AccountException;
+import com.haizhi.bqd.web.rest.util.SecurityUtil;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -50,6 +51,14 @@ public class UserController {
 
         userService.createUser(user);
         return Wrapper.OK;
+    }
+
+    @RequestMapping(value = "/profile", method = RequestMethod.GET)
+    @ResponseBody
+    public Wrapper profile(){
+        User user = userService.getUserById(SecurityUtil.getCurrentUser().getId());
+        user.mask();
+        return Wrapper.OKBuilder.data(user).build();
     }
 
     @RequestMapping(value = "/modify", method = RequestMethod.PUT)

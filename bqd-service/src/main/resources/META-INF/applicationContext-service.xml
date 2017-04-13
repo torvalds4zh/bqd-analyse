@@ -11,4 +11,8 @@
         <property name="passwordEncoder" ref="passwordEncoder"></property>
     </bean>
 
+    <bean id="historicalTradeService" class="com.haizhi.bqd.service.service.impl.HistoricalTradeServiceImpl">
+        <property name="client" ref="esClient"/>
+    </bean>
+
 </beans>

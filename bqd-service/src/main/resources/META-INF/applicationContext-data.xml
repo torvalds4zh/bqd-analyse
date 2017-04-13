@@ -75,4 +75,10 @@
         <property name="jedisPool" ref="jedis"/>
         <property name="objectMapper" ref="objectMapper"/>
     </bean>
+
+    <bean id="esClient" class="com.haizhi.bqd.service.factory.ESClientFactory" factory-method="generate">
+        <constructor-arg value="${es.cluster_name}"/>
+        <constructor-arg value="${es.hosts}"/>
+    </bean>
+
 </beans>
