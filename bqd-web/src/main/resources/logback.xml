@@ -16,8 +16,8 @@
     </appender>
 
 
-    <appender name="bdqLog" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${catalina.base}/logs/bqd_log.log</file>
+    <appender name="bqdLog" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${catalina.base}/logs/bqdLog.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!-- daily rollover everyday -->
             <fileNamePattern>${catalina.base}/logs/bqd_log.%d.log</fileNamePattern>
@@ -60,7 +60,7 @@
     </logger>
 
     <root level="info">
-        <appender-ref ref="bdqLog"/>
+        <appender-ref ref="bqdLog"/>
         <!--<appender-ref ref="STDOUT"/>-->
     </root>
 

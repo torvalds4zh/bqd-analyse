@@ -102,12 +102,19 @@
             <version>1.9.2</version>
         </dependency>
 
+        <!--<dependency>-->
+            <!--<groupId>org.eclipse.jetty</groupId>-->
+            <!--<artifactId>jetty-server</artifactId>-->
+            <!--<version>9.3.0.M2</version>-->
+        <!--</dependency>-->
+
         <dependency>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-server</artifactId>
-            <version>9.3.0.M2</version>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>3.1.0</version>
+            <scope>provided</scope>
         </dependency>
-        
+
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
@@ -117,7 +124,7 @@
 
     </dependencies>
     <build>
-        <finalName>bdq-web</finalName>
+        <finalName>bqd-web</finalName>
 
         <plugins>
             <plugin>
@@ -148,6 +155,20 @@
                     </httpConnector>
                     <scanIntervalSeconds>3</scanIntervalSeconds>
                     <reload>automatic</reload>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.tomcat.maven</groupId>
+                <artifactId>tomcat7-maven-plugin</artifactId>
+                <version>2.2</version>
+                <configuration>
+                    <systemProperties>
+                        <haizhi.config.env>dev</haizhi.config.env>
+                    </systemProperties>
+                    <port>8080</port>
+                    <server>tomcat7</server>
+                    <path>/</path>
+                    <update>true</update>
                 </configuration>
             </plugin>
             <plugin>

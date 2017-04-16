@@ -4,6 +4,8 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.ClassRelativeResourceLoader;
+import org.springframework.core.io.Resource;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -44,7 +46,16 @@ public class ConfUtil {
             return Collections.emptyList();
         }
         List<String> result = Lists.newArrayList();
-        InputStream inputStream = ConfUtil.class.getClassLoader().getResourceAsStream("/conf/" + filePrefix + ".conf");
+        String path = "classpath:/conf/" + filePrefix + ".conf";
+        String tmpPath = path.substring("classpath:".length(), path.length());
+        ClassRelativeResourceLoader loader = new ClassRelativeResourceLoader(ConfUtil.class);
+        Resource res = loader.getResource(tmpPath);
+        InputStream inputStream = null;
+        try {
+            inputStream = res.getInputStream();
+        } catch (IOException e) {
+            log.error("{}", e);
+        }
         BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
         try {
             String line;
