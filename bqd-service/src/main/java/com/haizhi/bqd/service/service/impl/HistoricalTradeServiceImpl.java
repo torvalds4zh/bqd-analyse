@@ -29,6 +29,7 @@ public class HistoricalTradeServiceImpl implements HistoricalTradeService {
     @Override
     public DataItem search(HistoricalTradeReq req) {
         List<Map<String, Object>> result = Lists.newArrayList();
+
         BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
         if (!Strings.isNullOrEmpty(req.getTracct())) {
             queryBuilder.must(QueryBuilders.termQuery("TRACCT", req.getTracct()));
@@ -49,7 +50,6 @@ public class HistoricalTradeServiceImpl implements HistoricalTradeService {
         if (!Strings.isNullOrEmpty(req.getSeq())) {
             queryBuilder.must(QueryBuilders.termQuery("SEQ", req.getSeq()));
         }
-
         ESQueryer queryer = ESQueryer.builder()
                 .client(client)
                 .indice(CustomerIndice.POC_DDHIST)
@@ -127,5 +127,62 @@ public class HistoricalTradeServiceImpl implements HistoricalTradeService {
         }
 
         return null;
+    }
+
+    @Override
+    public DataItem ddhistSearch(String card) {
+
+        BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
+        if(!Strings.isNullOrEmpty(card)){
+            queryBuilder.must(QueryBuilders.termQuery("ei1card", card));
+        }
+
+        //先查与该卡号相关的流水账号
+        ESQueryer queryer = ESQueryer.builder()
+                .client(client)
+                .indice(CustomerIndice.POC_SIBS_EBCRDI)
+                .queryBuilder(queryBuilder)
+                .build();
+        SearchResponse response = queryer.actionGet();
+
+        log.info(" query {} took {} ms.", queryBuilder, response.getTook().getMillis());
+        List<String> traccs = Lists.newArrayList();
+        if (response != null && response.getHits() != null) {
+            for (SearchHit hit : response.getHits().getHits()) {
+                Map<String, Object> source = hit.getSource();
+                if(source.get("ei1acn") != null && !Strings.isNullOrEmpty(source.get("ei1acn").toString())){
+                    traccs.add(source.get("ei1acn").toString());
+                }
+            }
+        }
+
+        //再查这些流水账号的交易记录
+        if(traccs.size() > 0){
+            List<Map<String, Object>> result = Lists.newArrayList();
+
+            BoolQueryBuilder query = QueryBuilders.boolQuery();
+            for(String tracc : traccs){
+                if(!Strings.isNullOrEmpty(tracc)){
+                    query.should(QueryBuilders.termQuery("tracct", tracc));
+                }
+            }
+
+            ESQueryer esQueryer = ESQueryer.builder()
+                    .client(client)
+                    .indice(CustomerIndice.POC_SIBS_DDDHIS)
+                    .queryBuilder(query)
+                    .build();
+            SearchResponse searchResponse = esQueryer.actionGet();
+            log.info(" query {} took {} ms.", query, response.getTook().getMillis());
+
+            if (searchResponse != null && searchResponse.getHits() != null) {
+                for (SearchHit hit : searchResponse.getHits().getHits()) {
+                    result.add(hit.getSource());
+                }
+            }
+            return DataItem.builder().data(result).total(response.getHits().getTotalHits()).build();
+        }else {
+            return new DataItem();
+        }
     }
 }

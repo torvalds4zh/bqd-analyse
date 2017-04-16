@@ -8,7 +8,11 @@ public enum CustomerIndice implements Indice{
 
     POC_PCOA("poc", "pcoa"),
 
-    POC_EBS_S1GL("poc", "EBS_S1GL");
+    POC_EBS_S1GL("poc", "EBS_S1GL"),
+
+    POC_SIBS_EBCRDI("poc", "SIBS_EBCRDI"),
+
+    POC_SIBS_DDDHIS("poc", "SIBS_DDDHIS");
 
     String indice;
 

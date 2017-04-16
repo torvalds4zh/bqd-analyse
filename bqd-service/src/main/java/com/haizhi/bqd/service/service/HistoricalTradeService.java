@@ -32,4 +32,11 @@ public interface HistoricalTradeService {
      * @return
      */
     DataItem accountDetails(String accountId, String entityId, String currId, Integer from, Integer size);
+
+    /**
+     * 定期交易查询(定期账户)
+     * @param card
+     * @return
+     */
+    DataItem ddhistSearch(String card);
 }

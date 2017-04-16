@@ -4,7 +4,9 @@ import com.haizhi.bqd.common.Wrapper;
 import com.haizhi.bqd.service.model.DataItem;
 import com.haizhi.bqd.service.service.HistoricalTradeService;
 import com.haizhi.bqd.service.support.HistoricalTradeReq;
+import com.haizhi.bqd.web.exception.SearchException;
 import lombok.Setter;
+import org.elasticsearch.common.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -62,6 +64,16 @@ public class SearchController {
                           @RequestParam(value = "offset") Integer offset,
                           @RequestParam(value = "count") Integer count) {
         DataItem data = historicalTradeService.accountDetails(accountId, entityId, currId, offset, count);
+        return Wrapper.OKBuilder.data(data).build();
+    }
+
+    @RequestMapping(value = "/ddhist", method = RequestMethod.GET)
+    @ResponseBody
+    public Wrapper search(@RequestParam(value = "card") String card) {
+        if(Strings.isNullOrEmpty(card)){
+            return SearchException.MISS_CARD.get();
+        }
+        DataItem data = historicalTradeService.ddhistSearch(card);
         return Wrapper.OKBuilder.data(data).build();
     }
 
