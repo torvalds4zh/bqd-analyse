@@ -39,4 +39,6 @@ public interface HistoricalTradeService {
      * @return
      */
     DataItem ddhistSearch(String card);
+
+    DataItem union(String tracct, String trctype, String trsobr, String txDtStart, String txDtEnd, Integer from, Integer size);
 }

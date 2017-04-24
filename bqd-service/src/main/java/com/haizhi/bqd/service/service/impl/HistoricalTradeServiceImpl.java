@@ -12,6 +12,7 @@ import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.Strings;
 import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 
@@ -102,11 +103,11 @@ public class HistoricalTradeServiceImpl implements HistoricalTradeService {
         if (!Strings.isNullOrEmpty(accountId)) {
             queryBuilder.must(QueryBuilders.termQuery("GLAcc_ID", accountId));
         }
-        if(!Strings.isNullOrEmpty(entityId)){
+        if (!Strings.isNullOrEmpty(entityId)) {
             queryBuilder.must(QueryBuilders.termQuery("Entity_ID", entityId));
         }
 
-        if(!Strings.isNullOrEmpty(entityId)){
+        if (!Strings.isNullOrEmpty(entityId)) {
             queryBuilder.must(QueryBuilders.termQuery("Curr_ID", currId));
         }
         ESQueryer queryer = ESQueryer.builder()
@@ -133,7 +134,7 @@ public class HistoricalTradeServiceImpl implements HistoricalTradeService {
     public DataItem ddhistSearch(String card) {
 
         BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
-        if(!Strings.isNullOrEmpty(card)){
+        if (!Strings.isNullOrEmpty(card)) {
             queryBuilder.must(QueryBuilders.termQuery("ei1card", card));
         }
 
@@ -150,19 +151,19 @@ public class HistoricalTradeServiceImpl implements HistoricalTradeService {
         if (response != null && response.getHits() != null) {
             for (SearchHit hit : response.getHits().getHits()) {
                 Map<String, Object> source = hit.getSource();
-                if(source.get("ei1acn") != null && !Strings.isNullOrEmpty(source.get("ei1acn").toString())){
+                if (source.get("ei1acn") != null && !Strings.isNullOrEmpty(source.get("ei1acn").toString())) {
                     traccs.add(source.get("ei1acn").toString());
                 }
             }
         }
 
         //再查这些流水账号的交易记录
-        if(traccs.size() > 0){
+        if (traccs.size() > 0) {
             List<Map<String, Object>> result = Lists.newArrayList();
 
             BoolQueryBuilder query = QueryBuilders.boolQuery();
-            for(String tracc : traccs){
-                if(!Strings.isNullOrEmpty(tracc)){
+            for (String tracc : traccs) {
+                if (!Strings.isNullOrEmpty(tracc)) {
                     query.should(QueryBuilders.termQuery("tracct", tracc));
                 }
             }
@@ -181,8 +182,48 @@ public class HistoricalTradeServiceImpl implements HistoricalTradeService {
                 }
             }
             return DataItem.builder().data(result).total(response.getHits().getTotalHits()).build();
-        }else {
+        } else {
             return new DataItem();
         }
+    }
+
+    @Override
+    public DataItem union(String tracct, String trctype, String trsobr,
+                          String txDtBegin, String txDtEnd, Integer from, Integer size) {
+
+        BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
+        if (!Strings.isNullOrEmpty(tracct)) {
+            queryBuilder.must(QueryBuilders.termQuery("tracct", tracct));
+        }
+        if (!Strings.isNullOrEmpty(trctype)) {
+            queryBuilder.must(QueryBuilders.termQuery("trctyp", trctype));
+        }
+        if (!Strings.isNullOrEmpty(trsobr)) {
+            queryBuilder.must(QueryBuilders.termQuery("trsobr", trsobr));
+        }
+        if (!Strings.isNullOrEmpty(txDtBegin) && !Strings.isNullOrEmpty(txDtEnd)) {
+            queryBuilder.must(QueryBuilders.rangeQuery("tx_dt").from(txDtBegin).to(txDtEnd));
+        }
+
+        //先查与该卡号相关的流水账号
+        ESQueryer queryer = ESQueryer.builder()
+                .client(client)
+                .indice(CustomerIndice.POC_SIBS_TOTAL)
+                .queryBuilder(queryBuilder)
+                .from(from)
+                .size(size)
+                .build();
+        SearchResponse response = queryer.actionGet();
+
+        log.info(" query {} took {} ms.", queryBuilder, response.getTook().getMillis());
+        List<Map<String, Object>> traccs = Lists.newArrayList();
+        if (response != null && response.getHits() != null) {
+            for (SearchHit hit : response.getHits().getHits()) {
+                Map<String, Object> source = hit.getSource();
+                traccs.add(source);
+            }
+            return DataItem.builder().data(traccs).total(response.getHits().getTotalHits()).build();
+        }
+        return new DataItem();
     }
 }

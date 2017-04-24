@@ -77,4 +77,20 @@ public class SearchController {
         return Wrapper.OKBuilder.data(data).build();
     }
 
+    @RequestMapping(value = "/union", method = RequestMethod.GET)
+    @ResponseBody
+    public Wrapper search(@RequestParam(value = "tracct") String tracct,
+                          @RequestParam(value = "trctyp", required = false) String trctype,
+                          @RequestParam(value = "trsobr", required = false) String trsobr,
+                          @RequestParam(value = "tx_dt_begin", required = false) String txDtBegin,
+                          @RequestParam(value = "tx_dt_end", required = false) String txDtEnd,
+                          @RequestParam(value = "offset") Integer from,
+                          @RequestParam(value = "count") Integer size){
+        if(Strings.isNullOrEmpty(tracct)){
+            return SearchException.MISS_ACCTNO.get();
+        }
+        DataItem data = historicalTradeService.union(tracct, trctype, trsobr, txDtBegin, txDtEnd, from, size);
+        return Wrapper.OKBuilder.data(data).build();
+    }
+
 }
