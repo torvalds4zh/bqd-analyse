@@ -9,8 +9,6 @@ import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.search.aggregations.AggregationBuilder;
-import org.elasticsearch.search.highlight.HighlightBuilder;
-import org.elasticsearch.search.rescore.RescoreBuilder;
 
 import java.util.Collections;
 import java.util.List;
@@ -39,7 +37,7 @@ public class ESQueryer {
 
     private List<AggregationBuilder> aggregationBuilders;
 
-    private RescoreBuilder.Rescorer rescorer;
+//    private RescoreBuilder.Rescorer rescorer;
 
     private List<String> fetchFields;
 
@@ -70,20 +68,20 @@ public class ESQueryer {
             }
         }
 
-        if (rescorer != null) {
-            if (windowSize == null) {
-                windowSize = DEFAULT_WINDOW_SIZE;
-            }
-            requestBuilder.setRescorer(rescorer, windowSize);
-        }
+//        if (rescorer != null) {
+//            if (windowSize == null) {
+//                windowSize = DEFAULT_WINDOW_SIZE;
+//            }
+//            requestBuilder.setRescorer(rescorer, windowSize);
+//        }
 
         if (fetchFields == null || fetchFields.size() == 0) {
             this.fetchFields = Collections.singletonList(DEFAULT_FETCH_FIELD);
         }
 
-        requestBuilder = requestBuilder.addHighlightedField(new HighlightBuilder.Field("*").requireFieldMatch(true))
-                .setHighlighterEncoder("html")
-                .addFields((String[]) fetchFields.toArray(new String[fetchFields.size()]));
+//        requestBuilder = requestBuilder.addHighlightedField(new HighlightBuilder.Field("*").requireFieldMatch(true))
+//                .setHighlighterEncoder("html")
+//                .addFields((String[]) fetchFields.toArray(new String[fetchFields.size()]));
         return requestBuilder.execute().actionGet();
     }
 

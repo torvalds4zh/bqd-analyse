@@ -7,6 +7,7 @@ import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
+import org.elasticsearch.transport.client.PreBuiltTransportClient;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -26,7 +27,11 @@ public class ESClientFactory {
         Settings settings = Settings.builder()
                 .put(CLUSTER_NAME, clusterName)
                 .build();
-        TransportClient client = TransportClient.builder().settings(settings).build();
+//        Settings settings = Settings.builder()
+//                .put("cluster.name", "myClusterName").build();
+        TransportClient client = new PreBuiltTransportClient(settings);
+        //2.4.x
+//        TransportClient client = TransportClient.builder().settings(settings).build();
 
         for (String address : hosts.toString().split(",")) {
             if (address != null && !address.equals("")) {

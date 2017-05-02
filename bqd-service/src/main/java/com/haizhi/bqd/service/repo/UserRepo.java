@@ -4,6 +4,7 @@ import com.haizhi.bqd.service.model.User;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -42,6 +43,9 @@ public class UserRepo {
             String sql = "select * from " + TABLE_USERS + " where username = ? and status = 0";
             return template.queryForObject(sql, USER_ROW_MAPPER, username);
         } catch (DataAccessException ex) {
+            if (!(ex instanceof EmptyResultDataAccessException)) {
+                log.error("{}", ex);
+            }
             return null;
         }
     }
