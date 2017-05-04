@@ -24,13 +24,13 @@
     <!--自动扫描-->
     <mvc:annotation-driven/>
 
-    <mvc:interceptors>
-        <mvc:interceptor>
-            <mvc:mapping path="/**"/>
-            <mvc:exclude-mapping path="/helpcenter/*"/>
-            <bean class="com.haizhi.bqd.web.rest.log.LogInterceptor" id="logInterceptor"/>
-        </mvc:interceptor>
-    </mvc:interceptors>
+    <!--<mvc:interceptors>-->
+        <!--<mvc:interceptor>-->
+            <!--<mvc:mapping path="/**"/>-->
+            <!--<mvc:exclude-mapping path="/helpcenter/*"/>-->
+            <!--<bean class="com.haizhi.bqd.web.rest.log.LogInterceptor" id="logInterceptor"/>-->
+        <!--</mvc:interceptor>-->
+    <!--</mvc:interceptors>-->
 
     <!-- 默认的注解映射的支持 -->
     <mvc:annotation-driven>
