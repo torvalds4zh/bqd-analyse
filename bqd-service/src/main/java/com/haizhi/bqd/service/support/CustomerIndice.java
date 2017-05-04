@@ -4,7 +4,13 @@ package com.haizhi.bqd.service.support;
  * Created by chenbo on 17/4/13.
  */
 public enum CustomerIndice implements Indice{
-    POC_DDHIST("poc", "ddhist"),
+//    DDDHIS_DATAS("poc", "ddhist"),
+    DDDHIS_DATAS("dddhis", "datas"),
+    DDDHIS_ACCOUNT("dddhis_card", "account"),
+    DDDHIS_CARD_ACCOUNT("dddhis_card", "account"),
+    PCOAS_ACCOUNT("pcoas", "account"),
+    TOTAL_ACCOUNT_ACCOUNT("total_account", "info"),
+
 
     POC_PCOA("poc", "pcoa"),
 

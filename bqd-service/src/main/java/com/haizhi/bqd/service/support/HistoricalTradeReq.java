@@ -24,6 +24,11 @@ public class HistoricalTradeReq {
     String tratype;
 
     /**
+     * 支行号/机构
+     */
+    String trbr;
+
+    /**
      * 币种
      */
     String trctype;

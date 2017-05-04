@@ -5,14 +5,12 @@ import com.haizhi.bqd.service.model.DataItem;
 import com.haizhi.bqd.service.service.HistoricalTradeService;
 import com.haizhi.bqd.service.support.CustomerIndice;
 import com.haizhi.bqd.service.support.ESQueryer;
-import com.haizhi.bqd.service.support.HistoricalTradeReq;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.Strings;
 import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 
@@ -28,39 +26,40 @@ public class HistoricalTradeServiceImpl implements HistoricalTradeService {
     Client client;
 
     @Override
-    public DataItem search(HistoricalTradeReq req) {
+    public DataItem search(String tracct, String trbr, String trctyp, String trBeginDate, String trEndDate,
+                           Integer from, Integer size) {
         List<Map<String, Object>> result = Lists.newArrayList();
 
         BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
-        if (!Strings.isNullOrEmpty(req.getTracct())) {
-            queryBuilder.must(QueryBuilders.termQuery("TRACCT", req.getTracct()));
+        //账号
+        if (!Strings.isNullOrEmpty(tracct)) {
+            queryBuilder.must(QueryBuilders.termQuery("TRACCT", tracct));
         }
 
-        if (!Strings.isNullOrEmpty(req.getTratype())) {
-            queryBuilder.must(QueryBuilders.termQuery("TRATYP", req.getTratype()));
+        //支行号/机构
+        if (!Strings.isNullOrEmpty(trbr)) {
+            queryBuilder.must(QueryBuilders.termQuery("TRBR", trbr));
         }
 
-        if (!Strings.isNullOrEmpty(req.getTrctype())) {
-            queryBuilder.must(QueryBuilders.termQuery("TRCTYPE", req.getTrctype()));
+        //币种
+        if (!Strings.isNullOrEmpty(trctyp)) {
+            queryBuilder.must(QueryBuilders.termQuery("TRCTYP", trctyp));
         }
 
-        if (!(Strings.isNullOrEmpty(req.getTrBeginDate()) && Strings.isNullOrEmpty(req.getTrEndDate()))) {
-            queryBuilder.must(QueryBuilders.rangeQuery("TRDATE").from(req.getTrBeginDate()).to(req.getTrEndDate()));
+        if (!(Strings.isNullOrEmpty(trBeginDate) && Strings.isNullOrEmpty(trEndDate))) {
+            queryBuilder.must(QueryBuilders.rangeQuery("TRBDT7").from(trBeginDate).to(trEndDate));
         }
 
-        if (!Strings.isNullOrEmpty(req.getSeq())) {
-            queryBuilder.must(QueryBuilders.termQuery("SEQ", req.getSeq()));
-        }
         ESQueryer queryer = ESQueryer.builder()
                 .client(client)
-                .indice(CustomerIndice.POC_DDHIST)
-                .from(req.getFrom())
-                .size(req.getSize())
+                .indice(CustomerIndice.DDDHIS_DATAS)
+                .from(from)
+                .size(size)
                 .queryBuilder(queryBuilder)
                 .build();
         SearchResponse response = queryer.actionGet();
 
-        log.info(" query[{}] took {} ms.", req, response.getTook().getMillis());
+        log.info(" query[{}] took {} ms.", queryBuilder, response.getTook().getMillis());
         if (response != null && response.getHits() != null) {
             for (SearchHit hit : response.getHits().getHits()) {
                 result.add(hit.getSource());
@@ -68,6 +67,45 @@ public class HistoricalTradeServiceImpl implements HistoricalTradeService {
             return DataItem.builder().data(result).total(response.getHits().getTotalHits()).build();
         }
         return new DataItem();
+    }
+
+    @Override
+    public DataItem accountDetails(String card, String trbr, String trctype, String trBeginDate, String trEndDate,
+                                   Integer from, Integer size) {
+        List<Map<String, Object>> result = Lists.newArrayList();
+        BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
+        if (!Strings.isNullOrEmpty(card)) {
+            queryBuilder.must(QueryBuilders.termQuery("EI1CARD", card));
+        }
+        if (!Strings.isNullOrEmpty(trbr)) {
+            queryBuilder.must(QueryBuilders.termQuery("TRBR", trbr));
+        }
+
+        if (!Strings.isNullOrEmpty(trctype)) {
+            queryBuilder.must(QueryBuilders.termQuery("TRCTYP", trctype));
+        }
+
+        if (!(Strings.isNullOrEmpty(trBeginDate) && Strings.isNullOrEmpty(trEndDate))) {
+            queryBuilder.must(QueryBuilders.rangeQuery("TRBDT7").from(trBeginDate).to(trEndDate));
+        }
+        ESQueryer queryer = ESQueryer.builder()
+                .client(client)
+                .indice(CustomerIndice.DDDHIS_CARD_ACCOUNT)
+                .from(from)
+                .size(size)
+                .queryBuilder(queryBuilder)
+                .build();
+        SearchResponse response = queryer.actionGet();
+
+        log.info(" query {} took {} ms.", queryBuilder, response.getTook().getMillis());
+        if (response != null && response.getHits() != null) {
+            for (SearchHit hit : response.getHits().getHits()) {
+                result.add(hit.getSource());
+            }
+            return DataItem.builder().data(result).total(response.getHits().getTotalHits()).build();
+        }
+
+        return null;
     }
 
     @Override
@@ -94,40 +132,6 @@ public class HistoricalTradeServiceImpl implements HistoricalTradeService {
             return DataItem.builder().data(result).total(response.getHits().getTotalHits()).build();
         }
         return new DataItem();
-    }
-
-    @Override
-    public DataItem accountDetails(String accountId, String entityId, String currId, Integer from, Integer size) {
-        List<Map<String, Object>> result = Lists.newArrayList();
-        BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
-        if (!Strings.isNullOrEmpty(accountId)) {
-            queryBuilder.must(QueryBuilders.termQuery("GLAcc_ID", accountId));
-        }
-        if (!Strings.isNullOrEmpty(entityId)) {
-            queryBuilder.must(QueryBuilders.termQuery("Entity_ID", entityId));
-        }
-
-        if (!Strings.isNullOrEmpty(entityId)) {
-            queryBuilder.must(QueryBuilders.termQuery("Curr_ID", currId));
-        }
-        ESQueryer queryer = ESQueryer.builder()
-                .client(client)
-                .indice(CustomerIndice.POC_EBS_S1GL)
-                .from(from)
-                .size(size)
-                .queryBuilder(queryBuilder)
-                .build();
-        SearchResponse response = queryer.actionGet();
-
-        log.info(" query accountId {} took {} ms.", accountId, response.getTook().getMillis());
-        if (response != null && response.getHits() != null) {
-            for (SearchHit hit : response.getHits().getHits()) {
-                result.add(hit.getSource());
-            }
-            return DataItem.builder().data(result).total(response.getHits().getTotalHits()).build();
-        }
-
-        return null;
     }
 
     @Override
