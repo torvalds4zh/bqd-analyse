@@ -93,11 +93,13 @@ public class SearchController {
 
     @RequestMapping(value = "/acc_detail", method = RequestMethod.GET)
     @ResponseBody
-    public Wrapper search(@RequestParam(value = "card") String card) {
+    public Wrapper search(@RequestParam(value = "acc_id") String card,
+                          @RequestParam(value = "branch_id", required = false) String branchId,
+                          @RequestParam(value = "curr_id", required = false) String currId) {
         if (Strings.isNullOrEmpty(card)) {
             return SearchException.MISS_CARD.get();
         }
-        DataItem data = historicalTradeService.ddhistSearch(card);
+        DataItem data = historicalTradeService.ddhistSearch(card, branchId, currId);
         return Wrapper.OKBuilder.data(data).build();
     }
 
@@ -106,14 +108,20 @@ public class SearchController {
     public Wrapper search(@RequestParam(value = "tracct") String tracct,
                           @RequestParam(value = "trctyp", required = false) String trctype,
                           @RequestParam(value = "trsobr", required = false) String trsobr,
-                          @RequestParam(value = "tx_dt_begin", required = false) String txDtBegin,
-                          @RequestParam(value = "tx_dt_end", required = false) String txDtEnd,
+                          @RequestParam(value = "tx_dt_begin", required = false) Long txDtBegin,
+                          @RequestParam(value = "tx_dt_end", required = false) Long txDtEnd,
                           @RequestParam(value = "offset") Integer from,
                           @RequestParam(value = "count") Integer size) {
         if (Strings.isNullOrEmpty(tracct)) {
             return SearchException.MISS_ACCTNO.get();
         }
-        DataItem data = historicalTradeService.union(tracct, trctype, trsobr, txDtBegin, txDtEnd, from, size);
+        Calendar begin = Calendar.getInstance();
+        begin.setTimeInMillis(txDtBegin);
+        Calendar end = Calendar.getInstance();
+        end.setTimeInMillis(txDtEnd);
+        String trBegin = begin.get(Calendar.YEAR) + "" + begin.get(Calendar.DAY_OF_YEAR);
+        String trEnd = end.get(Calendar.YEAR) + "" + end.get(Calendar.DAY_OF_YEAR);
+        DataItem data = historicalTradeService.union(tracct, trctype, trsobr, trBegin, trEnd, from, size);
         return Wrapper.OKBuilder.data(data).build();
     }
 

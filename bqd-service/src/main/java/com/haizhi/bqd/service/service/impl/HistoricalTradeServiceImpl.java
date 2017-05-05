@@ -113,18 +113,18 @@ public class HistoricalTradeServiceImpl implements HistoricalTradeService {
         List<Map<String, Object>> result = Lists.newArrayList();
         BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
         if (!Strings.isNullOrEmpty(accId)) {
-            queryBuilder.must(QueryBuilders.wildcardQuery("COA_ID", String.format("*%s*", accId)));
+            queryBuilder.must(QueryBuilders.wildcardQuery("glaccId", String.format("*%s*", accId)));
         }
         ESQueryer queryer = ESQueryer.builder()
                 .client(client)
-                .indice(CustomerIndice.POC_PCOA)
+                .indice(CustomerIndice.PCOAS_ACCOUNT)
                 .from(from)
                 .size(size)
                 .queryBuilder(queryBuilder)
                 .build();
         SearchResponse response = queryer.actionGet();
 
-        log.info(" query accId {} took {} ms.", accId, response.getTook().getMillis());
+        log.info(" query {} took {} ms.", queryBuilder, response.getTook().getMillis());
         if (response != null && response.getHits() != null) {
             for (SearchHit hit : response.getHits().getHits()) {
                 result.add(hit.getSource());
@@ -135,60 +135,38 @@ public class HistoricalTradeServiceImpl implements HistoricalTradeService {
     }
 
     @Override
-    public DataItem ddhistSearch(String card) {
+    public DataItem ddhistSearch(String card, String branchId, String currId) {
 
         BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
         if (!Strings.isNullOrEmpty(card)) {
-            queryBuilder.must(QueryBuilders.termQuery("ei1card", card));
+            queryBuilder.must(QueryBuilders.termQuery("glaccId", card));
+        }
+
+        if (!Strings.isNullOrEmpty(branchId)) {
+            queryBuilder.must(QueryBuilders.termQuery("branchId", branchId));
+        }
+
+        if (!Strings.isNullOrEmpty(currId)) {
+            queryBuilder.must(QueryBuilders.termQuery("currId", currId));
         }
 
         //先查与该卡号相关的流水账号
         ESQueryer queryer = ESQueryer.builder()
                 .client(client)
-                .indice(CustomerIndice.POC_SIBS_EBCRDI)
+                .indice(CustomerIndice.PCOAS_ACCOUNT)
                 .queryBuilder(queryBuilder)
                 .build();
         SearchResponse response = queryer.actionGet();
 
         log.info(" query {} took {} ms.", queryBuilder, response.getTook().getMillis());
-        List<String> traccs = Lists.newArrayList();
+        List<Map<String, Object>> result = Lists.newArrayList();
         if (response != null && response.getHits() != null) {
             for (SearchHit hit : response.getHits().getHits()) {
-                Map<String, Object> source = hit.getSource();
-                if (source.get("ei1acn") != null && !Strings.isNullOrEmpty(source.get("ei1acn").toString())) {
-                    traccs.add(source.get("ei1acn").toString());
-                }
-            }
-        }
-
-        //再查这些流水账号的交易记录
-        if (traccs.size() > 0) {
-            List<Map<String, Object>> result = Lists.newArrayList();
-
-            BoolQueryBuilder query = QueryBuilders.boolQuery();
-            for (String tracc : traccs) {
-                if (!Strings.isNullOrEmpty(tracc)) {
-                    query.should(QueryBuilders.termQuery("tracct", tracc));
-                }
-            }
-
-            ESQueryer esQueryer = ESQueryer.builder()
-                    .client(client)
-                    .indice(CustomerIndice.POC_SIBS_DDDHIS)
-                    .queryBuilder(query)
-                    .build();
-            SearchResponse searchResponse = esQueryer.actionGet();
-            log.info(" query {} took {} ms.", query, response.getTook().getMillis());
-
-            if (searchResponse != null && searchResponse.getHits() != null) {
-                for (SearchHit hit : searchResponse.getHits().getHits()) {
-                    result.add(hit.getSource());
-                }
+                result.add(hit.getSource());
             }
             return DataItem.builder().data(result).total(response.getHits().getTotalHits()).build();
-        } else {
-            return new DataItem();
         }
+        return new DataItem();
     }
 
     @Override
@@ -197,22 +175,22 @@ public class HistoricalTradeServiceImpl implements HistoricalTradeService {
 
         BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
         if (!Strings.isNullOrEmpty(tracct)) {
-            queryBuilder.must(QueryBuilders.termQuery("tracct", tracct));
+            queryBuilder.must(QueryBuilders.termQuery("TrAcct", tracct));
         }
         if (!Strings.isNullOrEmpty(trctype)) {
-            queryBuilder.must(QueryBuilders.termQuery("trctyp", trctype));
+            queryBuilder.must(QueryBuilders.termQuery("TrCtyp", trctype));
         }
         if (!Strings.isNullOrEmpty(trsobr)) {
-            queryBuilder.must(QueryBuilders.termQuery("trsobr", trsobr));
+            queryBuilder.must(QueryBuilders.termQuery("TrSobr", trsobr));
         }
         if (!Strings.isNullOrEmpty(txDtBegin) && !Strings.isNullOrEmpty(txDtEnd)) {
-            queryBuilder.must(QueryBuilders.rangeQuery("tx_dt").from(txDtBegin).to(txDtEnd));
+            queryBuilder.must(QueryBuilders.rangeQuery("TrDate").from(txDtBegin).to(txDtEnd));
         }
 
         //先查与该卡号相关的流水账号
         ESQueryer queryer = ESQueryer.builder()
                 .client(client)
-                .indice(CustomerIndice.POC_SIBS_TOTAL)
+                .indice(CustomerIndice.TOTAL_ACCOUNT_ACCOUNT)
                 .queryBuilder(queryBuilder)
                 .from(from)
                 .size(size)

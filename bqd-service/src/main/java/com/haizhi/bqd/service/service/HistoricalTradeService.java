@@ -33,10 +33,12 @@ public interface HistoricalTradeService {
 
     /**
      * 定期交易查询(定期账户)
-     * @param card
+     * @param card 账号
+     * @Param branchId 机构
+     * @Param currId 币种
      * @return
      */
-    DataItem ddhistSearch(String card);
+    DataItem ddhistSearch(String card, String branchId, String currId);
 
     DataItem union(String tracct, String trctype, String trsobr, String txDtStart, String txDtEnd, Integer from, Integer size);
 }
