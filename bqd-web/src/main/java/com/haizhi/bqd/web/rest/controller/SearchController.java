@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.text.DecimalFormat;
 import java.util.Calendar;
 
 /**
@@ -25,6 +26,8 @@ public class SearchController {
     @Setter
     @Autowired
     HistoricalTradeService historicalTradeService;
+
+    DecimalFormat df=new DecimalFormat("000");
 
     @RequestMapping(method = RequestMethod.GET)
     @ResponseBody
@@ -48,8 +51,8 @@ public class SearchController {
         begin.setTimeInMillis(trBeginDate);
         Calendar end = Calendar.getInstance();
         end.setTimeInMillis(trEndDate);
-        String trBegin = begin.get(Calendar.YEAR) + "" + begin.get(Calendar.DAY_OF_YEAR);
-        String trEnd = end.get(Calendar.YEAR) + "" + end.get(Calendar.DAY_OF_YEAR);
+        String trBegin = begin.get(Calendar.YEAR) + "" + df.format(begin.get(Calendar.DAY_OF_YEAR));
+        String trEnd = end.get(Calendar.YEAR) + "" + df.format(end.get(Calendar.DAY_OF_YEAR));
         DataItem data = historicalTradeService.search(tracct, trbr, trctyp, trBegin, trEnd, offset, count);
         return Wrapper.OKBuilder.data(data).build();
     }
@@ -72,12 +75,13 @@ public class SearchController {
         if (trEndDate == null) {
             return SearchException.MISS_TR_END_DATE.get();
         }
+
         Calendar begin = Calendar.getInstance();
         begin.setTimeInMillis(trBeginDate);
         Calendar end = Calendar.getInstance();
         end.setTimeInMillis(trEndDate);
-        String trBegin = begin.get(Calendar.YEAR) + "" + begin.get(Calendar.DAY_OF_YEAR);
-        String trEnd = end.get(Calendar.YEAR) + "" + end.get(Calendar.DAY_OF_YEAR);
+        String trBegin = begin.get(Calendar.YEAR) + "" + df.format(begin.get(Calendar.DAY_OF_YEAR));
+        String trEnd = end.get(Calendar.YEAR) + "" + df.format(end.get(Calendar.DAY_OF_YEAR));
         DataItem data = historicalTradeService.accountDetails(card, trbr, trctype, trBegin, trEnd, offset, count);
         return Wrapper.OKBuilder.data(data).build();
     }
@@ -119,8 +123,8 @@ public class SearchController {
         begin.setTimeInMillis(txDtBegin);
         Calendar end = Calendar.getInstance();
         end.setTimeInMillis(txDtEnd);
-        String trBegin = begin.get(Calendar.YEAR) + "" + begin.get(Calendar.DAY_OF_YEAR);
-        String trEnd = end.get(Calendar.YEAR) + "" + end.get(Calendar.DAY_OF_YEAR);
+        String trBegin = begin.get(Calendar.YEAR) + "" + df.format(begin.get(Calendar.DAY_OF_YEAR));
+        String trEnd = end.get(Calendar.YEAR) + "" + df.format(end.get(Calendar.DAY_OF_YEAR));
         DataItem data = historicalTradeService.union(tracct, trctype, trsobr, trBegin, trEnd, from, size);
         return Wrapper.OKBuilder.data(data).build();
     }
