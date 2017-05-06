@@ -61,7 +61,7 @@ public class SearchController {
     @ResponseBody
     public Wrapper searchAccount(@RequestParam(value = "card", required = false) String card,
                                  @RequestParam(value = "trbr", required = false) String trbr,
-                                 @RequestParam(value = "trctype", required = false) String trctype,
+                                 @RequestParam(value = "trctyp", required = false) String trctyp,
                                  @RequestParam(value = "tr_begin_date", required = false) Long trBeginDate,
                                  @RequestParam(value = "tr_end_date", required = false) Long trEndDate,
                                  @RequestParam(value = "offset") Integer offset,
@@ -82,7 +82,7 @@ public class SearchController {
         end.setTimeInMillis(trEndDate);
         String trBegin = begin.get(Calendar.YEAR) + "" + df.format(begin.get(Calendar.DAY_OF_YEAR));
         String trEnd = end.get(Calendar.YEAR) + "" + df.format(end.get(Calendar.DAY_OF_YEAR));
-        DataItem data = historicalTradeService.accountDetails(card, trbr, trctype, trBegin, trEnd, offset, count);
+        DataItem data = historicalTradeService.accountDetails(card, trbr, trctyp, trBegin, trEnd, offset, count);
         return Wrapper.OKBuilder.data(data).build();
     }
 
@@ -110,7 +110,7 @@ public class SearchController {
     @RequestMapping(value = "/union", method = RequestMethod.GET)
     @ResponseBody
     public Wrapper search(@RequestParam(value = "tracct") String tracct,
-                          @RequestParam(value = "trctyp", required = false) String trctype,
+                          @RequestParam(value = "trctyp", required = false) String trctyp,
                           @RequestParam(value = "trsobr", required = false) String trsobr,
                           @RequestParam(value = "tx_dt_begin", required = false) Long txDtBegin,
                           @RequestParam(value = "tx_dt_end", required = false) Long txDtEnd,
@@ -125,7 +125,7 @@ public class SearchController {
         end.setTimeInMillis(txDtEnd);
         String trBegin = begin.get(Calendar.YEAR) + "" + df.format(begin.get(Calendar.DAY_OF_YEAR));
         String trEnd = end.get(Calendar.YEAR) + "" + df.format(end.get(Calendar.DAY_OF_YEAR));
-        DataItem data = historicalTradeService.union(tracct, trctype, trsobr, trBegin, trEnd, from, size);
+        DataItem data = historicalTradeService.union(tracct, trctyp, trsobr, trBegin, trEnd, from, size);
         return Wrapper.OKBuilder.data(data).build();
     }
 

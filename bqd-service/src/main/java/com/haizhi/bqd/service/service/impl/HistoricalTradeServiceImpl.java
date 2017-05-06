@@ -70,7 +70,7 @@ public class HistoricalTradeServiceImpl implements HistoricalTradeService {
     }
 
     @Override
-    public DataItem accountDetails(String card, String trbr, String trctype, String trBeginDate, String trEndDate,
+    public DataItem accountDetails(String card, String trbr, String trctyp, String trBeginDate, String trEndDate,
                                    Integer from, Integer size) {
         List<Map<String, Object>> result = Lists.newArrayList();
         BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
@@ -81,8 +81,8 @@ public class HistoricalTradeServiceImpl implements HistoricalTradeService {
             queryBuilder.must(QueryBuilders.termQuery("TRBR", trbr));
         }
 
-        if (!Strings.isNullOrEmpty(trctype)) {
-            queryBuilder.must(QueryBuilders.termQuery("TRCTYP", trctype));
+        if (!Strings.isNullOrEmpty(trctyp)) {
+            queryBuilder.must(QueryBuilders.termQuery("TRCTYP", trctyp));
         }
 
         if (!(Strings.isNullOrEmpty(trBeginDate) && Strings.isNullOrEmpty(trEndDate))) {
@@ -170,15 +170,15 @@ public class HistoricalTradeServiceImpl implements HistoricalTradeService {
     }
 
     @Override
-    public DataItem union(String tracct, String trctype, String trsobr,
+    public DataItem union(String tracct, String trctyp, String trsobr,
                           String txDtBegin, String txDtEnd, Integer from, Integer size) {
 
         BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
         if (!Strings.isNullOrEmpty(tracct)) {
             queryBuilder.must(QueryBuilders.termQuery("TrAcct", tracct));
         }
-        if (!Strings.isNullOrEmpty(trctype)) {
-            queryBuilder.must(QueryBuilders.termQuery("TrCtyp", trctype));
+        if (!Strings.isNullOrEmpty(trctyp)) {
+            queryBuilder.must(QueryBuilders.termQuery("TrCtyp", trctyp));
         }
         if (!Strings.isNullOrEmpty(trsobr)) {
             queryBuilder.must(QueryBuilders.termQuery("TrSobr", trsobr));

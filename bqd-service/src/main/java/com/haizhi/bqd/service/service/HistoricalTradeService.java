@@ -21,7 +21,7 @@ public interface HistoricalTradeService {
      * 账目详情查询
      * @return
      */
-    DataItem accountDetails(String card, String trbr, String trctype, String trBeginDate, String trEndDate,
+    DataItem accountDetails(String card, String trbr, String trctyp, String trBeginDate, String trEndDate,
                             Integer from, Integer size);
 
     /**
@@ -40,5 +40,5 @@ public interface HistoricalTradeService {
      */
     DataItem ddhistSearch(String card, String branchId, String currId);
 
-    DataItem union(String tracct, String trctype, String trsobr, String txDtStart, String txDtEnd, Integer from, Integer size);
+    DataItem union(String tracct, String trctyp, String trsobr, String txDtStart, String txDtEnd, Integer from, Integer size);
 }
