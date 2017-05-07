@@ -99,11 +99,13 @@ public class SearchController {
     @ResponseBody
     public Wrapper search(@RequestParam(value = "acc_id") String card,
                           @RequestParam(value = "branch_id", required = false) String branchId,
-                          @RequestParam(value = "curr_id", required = false) String currId) {
+                          @RequestParam(value = "curr_id", required = false) String currId,
+                          @RequestParam(value = "offset") Integer offset,
+                          @RequestParam(value = "count") Integer count) {
         if (Strings.isNullOrEmpty(card)) {
             return SearchException.MISS_CARD.get();
         }
-        DataItem data = historicalTradeService.ddhistSearch(card, branchId, currId);
+        DataItem data = historicalTradeService.ddhistSearch(card, branchId, currId, offset, count);
         return Wrapper.OKBuilder.data(data).build();
     }
 

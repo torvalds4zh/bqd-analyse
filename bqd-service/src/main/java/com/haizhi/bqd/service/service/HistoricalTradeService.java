@@ -38,7 +38,7 @@ public interface HistoricalTradeService {
      * @Param currId 币种
      * @return
      */
-    DataItem ddhistSearch(String card, String branchId, String currId);
+    DataItem ddhistSearch(String card, String branchId, String currId, Integer from, Integer size);
 
     DataItem union(String tracct, String trctyp, String trsobr, String txDtStart, String txDtEnd, Integer from, Integer size);
 }

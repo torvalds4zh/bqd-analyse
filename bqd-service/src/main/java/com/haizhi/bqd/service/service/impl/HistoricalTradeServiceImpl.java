@@ -135,7 +135,7 @@ public class HistoricalTradeServiceImpl implements HistoricalTradeService {
     }
 
     @Override
-    public DataItem ddhistSearch(String card, String branchId, String currId) {
+    public DataItem ddhistSearch(String card, String branchId, String currId, Integer from, Integer size) {
 
         BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
         if (!Strings.isNullOrEmpty(card)) {
@@ -155,6 +155,8 @@ public class HistoricalTradeServiceImpl implements HistoricalTradeService {
                 .client(client)
                 .indice(CustomerIndice.PCOAS_ACCOUNT)
                 .queryBuilder(queryBuilder)
+                .from(from)
+                .size(size)
                 .build();
         SearchResponse response = queryer.actionGet();
 
